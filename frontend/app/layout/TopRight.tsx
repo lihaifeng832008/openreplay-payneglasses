@@ -12,7 +12,6 @@ import { observer } from 'mobx-react-lite';
 import ThemeToggle from 'Components/ThemeToggle';
 import { hasHealth } from '@/utils/split-utils';
 import { mobileScreen } from 'App/utils/isMobile';
-import { PG_SOURCE_URL } from 'App/pgSource'; // add lee 2026.11.8 AGPL 源码链接
 
 function TopRight() {
   const { userStore } = useStore();
@@ -29,17 +28,6 @@ function TopRight() {
 
       {hasHealth && account.name ? <HealthStatus /> : null}
       {mobile ? null : <ThemeToggle />}
-      {/* add lee 2026.11.8 AGPL-3.0 源码获取链接（登录后各页面含看屏页都显示） */}
-      <a
-        href={PG_SOURCE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-xs text-gray-500 hover:underline"
-        style={{ lineHeight: '1.5' }}
-      >
-        Source
-      </a>
-      {/* end */}
 
       <Popover content={<UserMenu />} placement="topRight">
         <div className="flex items-center cursor-pointer">
