@@ -1,0 +1,32 @@
+{
+  "name": "assist-server",
+  "version": "v1.22.0",
+  "description": "assist server to get live sessions & sourcemaps reader to get stack trace",
+  "main": "peerjs-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openreplay/openreplay.git"
+  },
+  "author": "KRAIEM Taha Yassine <tahayk2@gmail.com>",
+  "license": "Elastic License 2.0 (ELv2)",
+  "bugs": {
+    "url": "https://github.com/openreplay/openreplay/issues"
+  },
+  "homepage": "https://github.com/openreplay/openreplay#readme",
+  "dependencies": {
+    "@fastify/deepmerge": "^3.2.4",
+    "@maxmind/geoip2-node": "^7.1.0",
+    "@prometheus-io/client": "^0.16.1",
+    "@socket.io/redis-adapter": "8.3.0",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "redis": "4.7.1",
+    "socket.io": "^4.8.4",
+    "ua-parser-js": "^2.0.10",
+    "winston": "^3.19.0"
+  }
+}

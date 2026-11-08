@@ -1,0 +1,18 @@
+export const CLIENT_TABS = {
+  INTEGRATIONS: 'integrations',
+  PROFILE: 'account',
+  SESSION_SETTINGS: 'sessions',
+  MANAGE_USERS: 'team',
+  MANAGE_ROLES: 'roles',
+  SITES: 'projects',
+  CUSTOM_FIELDS: 'metadata',
+  WEBHOOKS: 'webhooks',
+  NOTIFICATIONS: 'notifications',
+  AUDIT: 'audit',
+  BILLING: 'billing',
+  MODULES: 'modules',
+  VIDEOS: 'exported',
+  TEST_AGENTS: 'test-agents',
+  AGENTS: 'agents',
+  SUPPORT: 'support',
+};

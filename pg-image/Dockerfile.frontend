@@ -1,0 +1,18 @@
+# add lee 2026.10.29 坐席端补丁前端 + 客服看屏跟踪包，打成一个镜像（不编译，只替换静态文件）
+# 构建输入（由发版脚本送到构建目录，带 MANIFEST.sha256）：  # modify lee 2026.11.8 公开源码前去掉内部脚本名与服务器名
+#   public/                       本机 frontend/ 编译产物（含坐席端播放器补丁），替换官方网页根目录
+#   pg/pg-cobrowse-tracker.js     本机 pg-tracker/ 构建产物，访问地址 https://<OpenReplay 域名>/pg/pg-cobrowse-tracker.js
+#   pg/assist/                    同上构建产物：协助插件自托管样式、提示音、占位图（add lee 2026.10.31，v1.28.0-pg2 起）
+ARG BASE=public.ecr.aws/p1t3u8a3/frontend:v1.28.0
+FROM ${BASE}
+ARG PG_COMMIT=unknown
+ARG PG_TAG=unknown
+ARG PG_TRACKER_MD5=unknown
+ARG PG_BUILD=unknown
+# 官方镜像无 shell、以 65532 运行：不能 RUN，只用 COPY 覆盖（官方旧的带哈希名资源留在原处，新 index.html 不再引用）；不改 USER
+COPY public/ /var/www/openreplay/
+COPY pg/ /var/www/openreplay/pg/
+# modify lee 2026.10.31 加 pg.build（full = 网页与跟踪包都从提交整套编译；thin = 网页沿用本机产物，只许 main 测试）
+LABEL pg.commit="${PG_COMMIT}" pg.tag="${PG_TAG}" pg.tracker_md5="${PG_TRACKER_MD5}" pg.base="${BASE}" pg.build="${PG_BUILD}"
+# end
+# end

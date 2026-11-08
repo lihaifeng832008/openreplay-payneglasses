@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "ES2017",
+    "module": "esnext",
+    "lib": ["dom", "es2022", "esnext"],
+    "allowJs": true,
+    "isolatedModules": true,
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./app/*"],
+      "App/*": ["./app/*"],
+      "SVG/*": ["./app/svg/*"],
+      "Components/*": ["./app/components/*"],
+      "Types/*": ["./app/types/*"],
+      "UI/*": ["./app/components/ui/*"],
+      "UI": ["./app/components/ui"],
+      "Shared/*": ["./app/components/shared/*"],
+      "Player/*": ["../player/src/*"],
+      "Player": ["../player/src"],
+      "HOCs": ["./app/components/hocs"],
+      "HOCs/*": ["./app/components/hocs/*"],
+      "ENV": ["./env.ts"]
+    }
+  },
+  "include": [
+    "app",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/**/*.js",
+    "app/**/*.jsx",
+    "../player/src",
+    "../player/src/**/*.ts",
+    "window.d.ts"
+  ]
+}
