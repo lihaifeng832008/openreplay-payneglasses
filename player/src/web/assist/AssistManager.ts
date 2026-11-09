@@ -144,21 +144,28 @@ export default class AssistManager {
 
   private onVisChange = () => {
     this.socketCloseTimeout && clearTimeout(this.socketCloseTimeout);
-    if (document.hidden) {
-      this.socketCloseTimeout = setTimeout(() => {
-        const state = this.store.get();
-        if (
-          document.hidden &&
-          // TODO: should it be RemoteControlStatus.Disabled? (check)
-          state.calling === CallingState.NoCall &&
-          state.remoteControl === RemoteControlStatus.Enabled
-        ) {
-          this.socket?.close();
-        }
-      }, 30000);
-    } else {
+    // delete lee 2026.11.9 坐席页面切到后台满 30 秒不再主动断开（原逻辑断开后客户端收回控制，坐席回来只能看）
+    // if (document.hidden) {
+    //   this.socketCloseTimeout = setTimeout(() => {
+    //     const state = this.store.get();
+    //     if (
+    //       document.hidden &&
+    //       // TODO: should it be RemoteControlStatus.Disabled? (check)
+    //       state.calling === CallingState.NoCall &&
+    //       state.remoteControl === RemoteControlStatus.Enabled
+    //     ) {
+    //       this.socket?.close();
+    //     }
+    //   }, 30000);
+    // } else {
+    //   this.socket?.open();
+    // }
+    // end
+    // add lee 2026.11.9 回到前台时，连接若已断开则重新连接（已连着时 open() 不做任何事）
+    if (!document.hidden) {
       this.socket?.open();
     }
+    // end
   };
 
   private socket: Socket | null = null;
