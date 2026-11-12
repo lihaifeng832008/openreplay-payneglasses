@@ -1,6 +1,6 @@
 # Building the modified components
 
-Only two OpenReplay components are modified and deployed; all other services run the official v1.28.0 images.
+Three OpenReplay components are modified and deployed (agent web UI, assist, chalice API); all other services run the official v1.28.0 images.
 
 ## Agent web UI (frontend + player)
 
@@ -20,6 +20,17 @@ docker build -f assist/Dockerfile assist
 ```
 
 Optional environment variables: `PG_ASSIST_REDIS_URL` (enables the Redis adapter), `PG_ASSIST_REDIS_KEY` (channel prefix, default `pg-or-assist`).
+
+## Chalice API
+
+Built the same way as upstream `api/build.sh`:
+
+```bash
+cd api && mv Dockerfile.dockerignore .dockerignore
+docker build -f Dockerfile --build-arg envarg=default-foss -t chalice .
+```
+
+Adds the routes in `api/routers/subs/pg_assist.py` (registered before the upstream routers in `api/app.py`).
 
 ## Version
 

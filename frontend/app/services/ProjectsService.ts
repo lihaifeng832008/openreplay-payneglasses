@@ -11,6 +11,18 @@ export default class ProjectsService extends BaseService {
     return await r.json();
   };
 
+  // add lee 2026.11.12 看屏通话视频开关（项目设置 Assist 标签；接口见 api/routers/subs/pg_assist.py）
+  fetchAssistSettings = async (siteId: string) => {
+    const r = await this.client.get(`/${siteId}/pg/assist-settings`);
+    return await r.json();
+  };
+
+  saveAssistSettings = async (siteId: string, data: { callVideo: boolean }) => {
+    const r = await this.client.post(`/${siteId}/pg/assist-settings`, data);
+    return await r.json();
+  };
+  // end
+
   fetchList = async () => {
     const r = await this.client.get('/projects');
     return await r.json();

@@ -6,6 +6,7 @@ import CustomFields from 'Components/Client/CustomFields';
 import ProjectCaptureRate from 'Components/Client/Projects/ProjectCaptureRate';
 import CaptureLimit from 'Components/Client/Projects/CaptureLimit';
 import { Empty } from 'antd';
+import ProjectAssistSettings from 'Components/Client/Projects/ProjectAssistSettings'; // add lee 2026.11.12 看屏通话视频开关
 
 const ProjectTabContent: React.FC = () => {
   const { projectsStore } = useStore();
@@ -30,6 +31,7 @@ const ProjectTabContent: React.FC = () => {
         </>
       ),
       metadata: <CustomFields />,
+      assist: <ProjectAssistSettings project={project} />, // add lee 2026.11.12 看屏通话视频开关
     }),
     [project],
   );

@@ -29,6 +29,13 @@ function ProjectTabs() {
       label: t('Metadata'),
       content: <div>{t('Metadata Content')}</div>,
     },
+    // add lee 2026.11.12 看屏通话视频开关
+    {
+      key: 'assist',
+      label: t('Assist'),
+      content: <div>{t('Assist Content')}</div>,
+    },
+    // end
     // { key: 'groupKeys', label: 'Group Keys', content: <div>Group Keys Content</div> }
   ];
 

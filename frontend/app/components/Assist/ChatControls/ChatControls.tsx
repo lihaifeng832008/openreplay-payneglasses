@@ -4,6 +4,10 @@ import { Icon } from 'UI';
 import { Button } from 'antd';
 import type { LocalStream } from 'Player';
 import stl from './ChatControls.module.css';
+// add lee 2026.11.12 看屏通话视频开关：按项目设置 Assist 标签的开关决定是否显示视频按钮（接口 api/routers/subs/pg_assist.py）
+import { useStore } from 'App/mstore';
+import { projectsService } from 'App/services';
+// end
 
 interface Props {
   stream: LocalStream | null;
@@ -20,6 +24,26 @@ function ChatControls({
   isPrestart,
 }: Props) {
   const [audioEnabled, setAudioEnabled] = useState(true);
+  // add lee 2026.11.12 看屏通话视频开关：读到“允许”才显示视频按钮；读取中、读取失败一律不显示（与客户端默认一致）
+  const { projectsStore } = useStore();
+  const siteId = projectsStore.activeSiteId;
+  const [callVideoAllowed, setCallVideoAllowed] = useState(false);
+  React.useEffect(() => {
+    if (!siteId) return;
+    let alive = true;
+    projectsService
+      .fetchAssistSettings(`${siteId}`)
+      .then((r) => {
+        if (alive) setCallVideoAllowed(!!r?.data?.callVideo);
+      })
+      .catch(() => {
+        if (alive) setCallVideoAllowed(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [siteId]);
+  // end
 
   const toggleAudio = () => {
     if (!stream) {
@@ -67,6 +91,8 @@ function ChatControls({
           </Button>
         </div>
 
+        {/* modify lee 2026.11.12 看屏通话视频开关：项目设置不允许时不显示视频按钮 */}
+        {callVideoAllowed ? (
         <div className={cn(stl.btnWrapper, { [stl.disabled]: videoEnabled })}>
           <Button
             size="small"
@@ -88,6 +114,8 @@ function ChatControls({
             </span>
           </Button>
         </div>
+        ) : null}
+        {/* end */}
       </div>
       <div className="ml-auto">
         <button className={stl.endButton} onClick={endCall}>
