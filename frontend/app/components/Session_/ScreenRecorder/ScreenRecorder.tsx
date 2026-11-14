@@ -15,8 +15,10 @@ import { observer } from 'mobx-react-lite';
 import { ENTERPRISE_REQUEIRED } from 'App/constants';
 import { useStore } from 'App/mstore';
 import { useTranslation } from 'react-i18next';
+import PgRecordUploader from 'App/utils/pgRecordUploader'; // add lee 2026.11.14 边录边传
 
 let stopRecorderCb: () => void;
+let pgUploader: PgRecordUploader | null = null; // add lee 2026.11.14 当前这次录像的上传器
 
 /**
  * "edge" || "edg/"   chromium based edge (dev or canary)
@@ -57,6 +59,40 @@ function ScreenRecorder() {
     saveObj: { name: string; duration: number },
     blob: Blob,
   ) => {
+    // add lee 2026.11.14 边录边传：数据已一段段传给后台，这里只传完最后一段并合成一个文件
+    if (pgUploader) {
+      const uploader = pgUploader;
+      pgUploader = null;
+      // modify lee 2026.11.14 保存过程显示剩余段数，传完再提示成功
+      // toast.info(t('Saving the recording...'));
+      // const ok = await uploader.finish(saveObj.duration);
+      // if (ok) toast.success(t('Session recording uploaded'));
+      // else toast.error(t("Couldn't save the recording"));
+      const TOAST_ID = 'pg-record-saving';
+      const text = (left: number) =>
+        left > 0
+          ? `${t('Saving the recording')}… ${left} ${t('part(s) left')}`
+          : `${t('Saving the recording')}…`;
+      toast.info(text(uploader.remaining()), {
+        toastId: TOAST_ID,
+        autoClose: false,
+      });
+      const ok = await uploader.finish(saveObj.duration, (left) =>
+        toast.update(TOAST_ID, { render: text(left) }),
+      );
+      toast.dismiss(TOAST_ID);
+      if (ok) toast.success(t('Session recording uploaded'));
+      else toast.error(t("Couldn't save the recording"));
+      // end
+      return;
+    }
+    // end
+    // add lee 2026.11.14 录像机没出数据（0 字节）时不上传，直接提示
+    if (!blob || blob.size === 0) {
+      toast.error(t("Recording is empty, nothing was saved"));
+      return;
+    }
+    // end
     try {
       toast.warn('Uploading the recording...');
       const { URL, key } = await recordingsService.reserveUrl(siteId, {
@@ -95,13 +131,21 @@ function ScreenRecorder() {
 
   const startRecording = async () => {
     try {
+      // modify lee 2026.11.14 边录边传：录像器每段数据交给上传器
+      const recName = `${formatTimeOrDate(new Date().getTime(), undefined, true)}_${sessionId}`;
+      let uploader: PgRecordUploader | null = null;
       // @ts-ignore
       stopRecorderCb = await screenRecorder(
-        `${formatTimeOrDate(new Date().getTime(), undefined, true)}_${sessionId}`,
+        recName,
         sessionId,
         onSave,
         onStop,
+        (chunk: Blob) => uploader?.push(chunk),
       );
+      // 屏幕共享已获准才开始上传（首段数据 200ms 后才到，这里同步创建来得及）
+      uploader = new PgRecordUploader(siteId as string, sessionId, recName);
+      pgUploader = uploader;
+      // end
       setRecording(true);
     } catch (e) {
       stopRecordingHandler();
@@ -127,7 +171,10 @@ function ScreenRecorder() {
     }
   }, [isRecording]);
 
-  if (!isSupported() || !isEnterprise) {
+  // modify lee 2026.11.14 看屏录像改由自家接口 api/routers/subs/pg_assist_records.py 保存，开源版也放开（只限浏览器支持）
+  // if (!isSupported() || !isEnterprise) {
+  if (!isSupported()) {
+  // end
     return (
       <div className="p-2">
         {/* @ts-ignore */}

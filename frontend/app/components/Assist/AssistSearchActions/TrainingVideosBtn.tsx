@@ -23,7 +23,10 @@ function TrainingVideosBtn() {
   const showRecords = () => {
     showModal(<Recordings />, { right: true, width: 960 });
   };
-  return isEnterprise && !modules.includes(MODULES.OFFLINE_RECORDINGS) ? (
+  // modify lee 2026.11.14 看屏录像列表开源版也放开（数据来自 api/routers/subs/pg_assist_records.py）
+  // return isEnterprise && !modules.includes(MODULES.OFFLINE_RECORDINGS) ? (
+  return !modules.includes(MODULES.OFFLINE_RECORDINGS) ? (
+  // end
     <Button size={'small'} onClick={showRecords}>
       {t('Training Videos')}
     </Button>

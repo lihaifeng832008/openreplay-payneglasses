@@ -92,5 +92,21 @@ export default function LiveStatusText({ connectionStatus }: Props) {
         );
     }
   };
+  // add lee 2026.11.14 客户把网页放到后台：不遮住画面（保留离开前最后的页面），只在顶部显示一条提示，不挡坐席操作
+  if (connectionStatus === ConnectionStatus.Inactive) {
+    return (
+      <div
+        style={{ pointerEvents: 'none' }}
+        className="absolute top-0 left-0 right-0 z-10 flex justify-center"
+      >
+        <div className="mt-2 px-4 py-2 rounded-lg bg-yellow text-sm shadow">
+          {t(
+            'The customer switched to another tab or app. Showing the last page they viewed; it will update when they come back.',
+          )}
+        </div>
+      </div>
+    );
+  }
+  // end
   return <div className={ovStl.overlay}>{renderView()}</div>;
 }

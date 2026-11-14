@@ -20,6 +20,8 @@ import { Avatar, CountryFlag, Icon, Label, TextEllipsis } from 'UI';
 import Counter from './Counter';
 import ErrorBars from './ErrorBars';
 import PlayLink from './PlayLink';
+import PgRecordingLink from './PgRecordingLink'; // add lee 2026.11.14 看屏录像按钮
+import { IRecord } from 'App/services/RecordingsService'; // add lee 2026.11.14
 import SessionMetaList from './SessionMetaList';
 import stl from './sessionItem.module.css';
 
@@ -76,6 +78,7 @@ interface Props {
   timestamp?: number;
   onBeforeOpen?: () => void;
   noHover?: boolean;
+  pgRecords?: IRecord[]; // add lee 2026.11.14 这个会话的看屏录像（只有 Sessions 列表传）
 }
 
 const PREFETCH_STATE = {
@@ -114,6 +117,7 @@ function SessionItem(props: RouteComponentProps & Props) {
     noWrap,
     onBeforeOpen,
     noHover,
+    pgRecords, // add lee 2026.11.14 看屏录像
   } = props;
 
   const {
@@ -490,6 +494,12 @@ function SessionItem(props: RouteComponentProps & Props) {
                   </div>
                 </div>
               ) : (
+                <>
+                {/* add lee 2026.11.14 有看屏录像时，播放按钮旁加摄像机按钮 */}
+                {pgRecords && pgRecords.length > 0 && (
+                  <PgRecordingLink records={pgRecords} />
+                )}
+                {/* end */}
                 <PlayLink
                   isAssist={isAssist}
                   sessionId={sessionId}
@@ -505,6 +515,7 @@ function SessionItem(props: RouteComponentProps & Props) {
                         : populateData
                   }
                 />
+                </>
               )}
             </div>
           </div>

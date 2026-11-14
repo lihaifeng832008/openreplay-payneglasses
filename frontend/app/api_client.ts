@@ -259,9 +259,19 @@ export default class APIClient {
 
     const init = this.getInit(method, headers, abortSignal);
 
-    if (init.method !== 'GET' && params !== undefined) {
+    // modify lee 2026.11.14 看屏录像边录边传：请求体是二进制（Blob）时原样发送，不转 JSON
+    // if (init.method !== 'GET' && params !== undefined) {
+    //   init.body = JSON.stringify(options.clean ? clean(params) : params);
+    // }
+    if (init.method !== 'GET' && params instanceof Blob) {
+      init.body = params;
+      (init.headers as Headers).set('Content-Type', 'application/octet-stream');
+    } else if (init.method !== 'GET' && params !== undefined) {
       init.body = JSON.stringify(options.clean ? clean(params) : params);
     }
+    // add lee 2026.11.14 页面关闭 / 刷新时仍要发完的小请求（看屏录像离开页面时“完成”），浏览器限 64KB
+    if ((options as any)?.keepalive) init.keepalive = true;
+    // end
 
     if (
       (path.includes('login') ||

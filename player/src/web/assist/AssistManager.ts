@@ -128,7 +128,14 @@ export default class AssistManager {
     } else {
       this.setMessagesLoading(false);
     }
-    if (status === ConnectionStatus.Connected) {
+    // modify lee 2026.11.14 客户把网页放到后台（不活跃）时不隐藏画面，保留客户离开前最后的页面（Lee 11-14 定方案 B）；
+    // 坐席端顶部另有提示条（LiveStatusText 的 Inactive 分支）
+    // if (status === ConnectionStatus.Connected) {
+    if (
+      status === ConnectionStatus.Connected ||
+      status === ConnectionStatus.Inactive
+    ) {
+      // end
       this.screen.display(true);
     } else {
       this.screen.display(false);

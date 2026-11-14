@@ -10,6 +10,8 @@ import RecordingStatus from 'Shared/SessionsTabOverview/components/RecordingStat
 import { observer } from 'mobx-react-lite';
 import { useStore } from 'App/mstore';
 import SessionDateRange from './SessionDateRange';
+import { recordingsService } from 'App/services'; // add lee 2026.11.14 看屏录像按钮
+import { IRecord } from 'App/services/RecordingsService'; // add lee 2026.11.14
 import { useTranslation } from 'react-i18next';
 
 type SessionStatus = {
@@ -50,6 +52,29 @@ function SessionList() {
   const activeSite = projectsStore.active;
   const hasNoRecordings = !activeSite || !activeSite.recorded;
   const metaList = customFieldStore.list;
+
+  // add lee 2026.11.14 Sessions 列表录像按钮：当前这一页会话一次查出哪些有看屏录像
+  const [pgRecords, setPgRecords] = React.useState<Record<string, IRecord[]>>({});
+  const pgSessionKey = list.map((s: any) => String(s.sessionId)).join(',');
+  useEffect(() => {
+    if (!pgSessionKey) {
+      setPgRecords({});
+      return;
+    }
+    let cancelled = false;
+    recordingsService
+      .fetchRecordingsBySessions(pgSessionKey.split(','))
+      .then((map) => {
+        if (!cancelled) setPgRecords(map || {});
+      })
+      .catch(() => {
+        if (!cancelled) setPgRecords({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [pgSessionKey, siteId]);
+  // end
 
   useEffect(() => {
     if (!searchStore.urlParsed || siteId !== previousSiteid) return;
@@ -203,6 +228,7 @@ function SessionList() {
                   lastPlayedSessionId={lastPlayedSessionId}
                   bookmarked={isBookmark}
                   toggleFavorite={toggleFavorite}
+                  pgRecords={pgRecords[String(session.sessionId)]} // add lee 2026.11.14 看屏录像按钮
                 />
               </div>
             ))}

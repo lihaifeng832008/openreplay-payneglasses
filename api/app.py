@@ -19,6 +19,7 @@ from crons import core_crons, core_dynamic_crons
 from routers import core, core_dynamic
 from routers.subs import health, spot, mcp
 from routers.subs import pg_assist  # add lee 2026.11.12 看屏通话视频开关
+from routers.subs import pg_assist_records  # add lee 2026.11.14 看屏录像
 
 loglevel = config("LOGLEVEL", default=logging.WARNING)
 print(f">Loglevel set to: {loglevel}")
@@ -43,7 +44,10 @@ async def lifespan(app: FastAPI):
     await ch_client.init()
     app.schedule.start()
 
-    for job in core_crons.cron_jobs + core_dynamic_crons.cron_jobs:
+    # modify lee 2026.11.14 加看屏录像中断上传收尾任务（pg_assist_records.cron_jobs）
+    # for job in core_crons.cron_jobs + core_dynamic_crons.cron_jobs:
+    for job in core_crons.cron_jobs + core_dynamic_crons.cron_jobs + pg_assist_records.cron_jobs:
+    # end
         app.schedule.add_job(id=job["func"].__name__, **job)
 
     ap_logger.info(">Scheduled jobs:")
@@ -142,6 +146,7 @@ app.add_middleware(
 # add lee 2026.11.12 看屏通话视频开关：放在官方路由之前，免得 /pg/assist/... 先被官方 /{projectId}/... 一类路由匹配走
 app.include_router(pg_assist.public_app)
 app.include_router(pg_assist.app)
+app.include_router(pg_assist_records.app)  # add lee 2026.11.14 看屏录像
 # end
 app.include_router(core.public_app)
 app.include_router(core.app)
